@@ -106,6 +106,8 @@ private:
   FILE *efout;
   FILE *efile;
   void out_xyz_and_force(int coord=0);
+
+  class AtomVecAWSEM *avec;
 };
 
 }

@@ -7,14 +7,16 @@ http://papoian.chem.umd.edu/
 Last Update: 12/01/2010
 ------------------------------------------------------------------------- */
 
-#include "math.h"
-#include "stdio.h"
-#include "stdlib.h"
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "pair_excluded_volume.h"
 #include "atom.h"
+#include "atom_vec_awsemmd.h"
 #include "comm.h"
 #include "force.h"
 #include "update.h"
+#include "neighbor.h"
 #include "neigh_list.h"
 #include "memory.h"
 #include "error.h"
@@ -96,8 +98,8 @@ void PairExcludedVolume::compute(int eflag, int vflag)
       imol = atom->molecule[i];
       jmol = atom->molecule[j];
       
-      ires = atom->residue[i];
-      jres = atom->residue[j];
+      ires = avec->residue[i];
+      jres = avec->residue[j];
 
       delx = xtmp - x[j][0];
       dely = ytmp - x[j][1];
@@ -231,6 +233,18 @@ void PairExcludedVolume::coeff(int narg, char **arg)
 }
 
 /* ----------------------------------------------------------------------
+   init specific to this pair style
+------------------------------------------------------------------------- */
+
+void PairExcludedVolume::init_style()
+{
+  avec = (AtomVecAWSEM *) atom->style_match("awsemmd");
+  if (!avec) error->all(FLERR,"Pair excluded_volume requires atom style awsemmd");
+
+  neighbor->request(this,instance_me);
+}
+
+/* ----------------------------------------------------------------------
    init for one type pair i,j and corresponding j,i
 ------------------------------------------------------------------------- */
 
@@ -342,8 +356,8 @@ double PairExcludedVolume::single(int i, int j, int itype, int jtype, double rsq
   imol = atom->molecule[i];
   jmol = atom->molecule[j];
   
-  ires = atom->residue[i];
-  jres = atom->residue[j];
+  ires = avec->residue[i];
+  jres = avec->residue[j];
 
   if (abs(ires-jres)<5 && imol==jmol) rcut = cut_short[itype][jtype];
   else rcut = cut_long[itype][jtype];

@@ -10,12 +10,13 @@ Last Update: 12/01/2010
 // pair_style gocontacts pair_gomodel_coeff.data 24
 // pair_coeff * * 24
 
-#include "math.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "pair_go-contacts.h"
 #include "atom.h"
+#include "atom_vec_awsemmd.h"
 #include "comm.h"
 #include "force.h"
 #include "update.h"
@@ -138,8 +139,8 @@ void PairGoContacts::compute(int eflag, int vflag)
       imol = atom->molecule[i]-1;
       jmol = atom->molecule[j]-1;
       
-      ires = atom->residue[i]-1;
-      jres = atom->residue[j]-1;
+      ires = avec->residue[i]-1;
+      jres = avec->residue[j]-1;
       
       if (abs(jres-ires)<=3) continue;
 
@@ -363,6 +364,18 @@ void PairGoContacts::coeff(int narg, char **arg)
 }
 
 /* ----------------------------------------------------------------------
+   init specific to this pair style
+------------------------------------------------------------------------- */
+
+void PairGoContacts::init_style()
+{
+  avec = (AtomVecAWSEM *) atom->style_match("awsemmd");
+  if (!avec) error->all(FLERR,"Pair go-contacts requires atom style awsemmd");
+
+  neighbor->request(this,instance_me);
+}
+
+/* ----------------------------------------------------------------------
    init for one type pair i,j and corresponding j,i
 ------------------------------------------------------------------------- */
 
@@ -510,8 +523,8 @@ double PairGoContacts::single(int i, int j, int itype, int jtype, double rsq,
   imol = atom->molecule[i]-1;
   jmol = atom->molecule[j]-1;
   
-  ires = atom->residue[i]-1;
-  jres = atom->residue[j]-1;
+  ires = avec->residue[i]-1;
+  jres = avec->residue[j]-1;
   
 // || rsq>sigma_sq[ires][jres]*9
   if (abs(jres-ires)<=3 || rsq>=cutsq[itype][jtype] || rsq>sigma_sq[ires][jres]*9) return 0.0;

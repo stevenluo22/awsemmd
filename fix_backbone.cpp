@@ -9,9 +9,10 @@
    Last Update: 03/23/2011
    ------------------------------------------------------------------------- */
 
-#include "math.h"
-#include "string.h"
-#include "stdlib.h"
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "fix_backbone.h"
 #include "atom.h"
 #include "update.h"
@@ -24,11 +25,10 @@
 #include "group.h"
 #include "domain.h"
 #include "memory.h"
+#include "atom_vec_awsemmd.h"
 #include "comm.h"
 #include "timer.h"
 #include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
 using std::ifstream;
@@ -773,7 +773,8 @@ inline void FixBackbone::Construct_Computational_Arrays()
   int nlocal = atom->nlocal;
   int nall = atom->nlocal + atom->nghost;
   int *mol_tag = atom->molecule;
-  int *res_tag = atom->residue;
+  int *res_tag = avec->residue;
+
 	
 
   int i;
@@ -978,6 +979,9 @@ int FixBackbone::setmask()
 
 void FixBackbone::init()
 {
+  avec = (AtomVecAWSEM *) atom->style_match("awsemmd");
+  if (!avec) error->all(FLERR,"Fix backbone requires atom style awsemmd");
+
   if (strstr(update->integrate_style,"respa"))
     nlevels_respa = ((Respa *) update->integrate)->nlevels;
 	
@@ -1191,7 +1195,7 @@ void FixBackbone::compute_chain_potential(int i)
   int ip1, im1; 
   int im1_resno;
   // N(i) - Cb(i)
-  int *res_tag = atom->residue;
+  int *res_tag = avec->residue;
   if (!isFirst(i) && se[i_resno]!='G') {
     im1 = res_no_l[i_resno-1];
     im1_resno = res_no[im1]-1;
@@ -2705,7 +2709,7 @@ void FixBackbone::compute_amh_go_model()
   // loop over neighbors of my atoms
   for (ii = 0; ii < inum; ii++) {
     i = ilist[ii];
-    ires = atom->residue[i];
+    ires = avec->residue[i];
     imol = atom->molecule[i];
     ires_type = se_map[se[ires-1]-'A'];
     
@@ -2729,7 +2733,7 @@ void FixBackbone::compute_amh_go_model()
       Ei = 0.0;
       for (jj = 0; jj < jnum; jj++) {
         j = jlist[jj];
-        jres = atom->residue[j];
+        jres = avec->residue[j];
         jmol = atom->molecule[j];
         jres_type = se_map[se[jres-1]-'A'];
         

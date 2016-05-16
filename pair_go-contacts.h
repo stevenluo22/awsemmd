@@ -30,6 +30,7 @@ class PairGoContacts : public Pair {
   void compute(int, int);
   void settings(int, char **);
   void coeff(int, char **);
+  void init_style();
   double init_one(int, int);
   void write_restart(FILE *);
   void read_restart(FILE *);
@@ -64,6 +65,8 @@ class PairGoContacts : public Pair {
   void allocate();
   
   FILE *fout;
+
+  class AtomVecAWSEM *avec;
 };
 
 }
