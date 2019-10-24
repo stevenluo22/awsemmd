@@ -20,6 +20,7 @@ Last Update: 12/01/2010
 #include "comm.h"
 #include "force.h"
 #include "update.h"
+#include "neighbor.h"
 #include "neigh_list.h"
 #include "memory.h"
 #include "error.h"
@@ -344,8 +345,8 @@ void PairGoContacts::coeff(int narg, char **arg)
   int ilo,ihi,jlo,jhi;
   double cut_one;
   
-  force->bounds(arg[0],atom->ntypes,ilo,ihi);
-  force->bounds(arg[1],atom->ntypes,jlo,jhi);
+  force->bounds(FLERR,arg[0],atom->ntypes,ilo,ihi);
+  force->bounds(FLERR,arg[1],atom->ntypes,jlo,jhi);
 
   cut_one = cut_global;
   if (narg == 3)

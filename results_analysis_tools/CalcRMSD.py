@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 # Modified by Weihua Zheng, Peter Wolynes Group Apr., 2011
+# Modified by Aram Davtyan, Aug 2018
 # Use BioPython to calculate RMSD from the ref. structure.
 # Only C-alpha atoms are used.
 
@@ -10,7 +11,7 @@
 # Papoian's Group, University of Maryland at Collage Park
 # http://papoian.chem.umd.edu/
 
-# Last Update: 03/04/2011
+# Last Update: 08/13/2018
 # ----------------------------------------------------------------------
 
 import sys
@@ -93,20 +94,20 @@ class Atom:
 		f.write(self.desc)
 		f.write('\n')
 
-if len(sys.argv)!=5 and len(sys.argv)!=4:
-	print "\nCalcQValue.py PDB_Id Input_file(lammpstrj) Output_file(rmsd)\n"
+if len(sys.argv)!=4:
+	print "\nCalcRMSD.py PDB_Id Input_file(lammpstrj) Output_file(rmsd)\n"
 	exit()
 
 struct_id = sys.argv[1]
-pdb_file = struct_id + ".pdb"
+if struct_id[-4:].lower()==".pdb":
+        pdb_file = struct_id
+	struct_id = struct_id[:-4]
+else:
+        pdb_file = struct_id + ".pdb"
+
 lammps_file = sys.argv[2]
 
-output_file = ""
-if len(sys.argv)>3: output_file = sys.argv[3]
-
-sigma_exp = 0.15
-if len(sys.argv)==5:
-	sigma_exp = float(sys.argv[4])
+output_file = sys.argv[3]
 
 n_atoms = 0
 i_atom = 0
@@ -116,8 +117,6 @@ ca_atoms_pdb = []
 ca_atoms = []
 box = []
 A = []
-sigma = []
-sigma_sq = []
 
 out = open(output_file, 'w')
 
@@ -147,35 +146,15 @@ def computeRMSD():
 	sup.run()
 	rms = sup.get_rms()
 	return rms
-##
-
-#def computeQ():
-#	if len(ca_atoms)!=len(ca_atoms_pdb):
-#		print "Error. Length mismatch!"
-#		exit()
-#	Q = 0
-#	N = len(ca_atoms)
-#	for ia in range(0, N):
-#		for ja in range(ia+3, N):
-#			r = vabs(vector(ca_atoms[ia], ca_atoms[ja]))
-#			rn = vabs(vector(ca_atoms_pdb[ia], ca_atoms_pdb[ja]))
-#			dr = r - rn
-#			Q = Q + exp(-dr*dr/(2*sigma_sq[ja-ia]));
-#	Q = 2*Q/((N-2)*(N-3))
-#	return Q
 
 s = p.get_structure(struct_id, pdb_file)
 chains = s[0].get_list()
-chain = chains[0]
-for res in chain:
-	is_regular_res = res.has_id('CA') and res.has_id('O')
-	res_id = res.get_id()[0]
-        if (res_id==' ' or res_id=='H_MSE' or res_id=='H_M3L') and is_regular_res:
-		ca_atoms_pdb.append(res['CA'].get_coord())
-
-for i in range(0, len(ca_atoms_pdb)+1):
-	sigma.append( (1+i)**sigma_exp )
-	sigma_sq.append(sigma[-1]*sigma[-1])
+for chain in chains:
+	for res in chain:
+		is_regular_res = res.has_id('CA') and res.has_id('O')
+		res_id = res.get_id()[0]
+        	if (res_id==' ' or res_id=='H_MSE' or res_id=='H_M3L') and is_regular_res:
+			ca_atoms_pdb.append(res['CA'].get_coord())
 
 lfile = open(lammps_file)
 for l in lfile:
@@ -185,9 +164,8 @@ for l in lfile:
 	else:
 		if item == "TIMESTEP":
 			if len(ca_atoms)>0:
-				q = computeRMSD()
-				#q = computeQ()
-				out.write(str(round(q,3)))
+				rmsd = computeRMSD()
+				out.write(str(round(rmsd,3)))
 				out.write(' ')
 				n_atoms = len(ca_atoms)
 			step = int(l)
@@ -217,9 +195,8 @@ for l in lfile:
 lfile.close()
 
 if len(ca_atoms)>0:
-	q = computeRMSD()
-	#q = computeQ()
-	out.write(str(round(q,3)))
+	rmsd = computeRMSD()
+	out.write(str(round(rmsd,3)))
 	out.write(' ')
 	n_atoms = len(ca_atoms)
 

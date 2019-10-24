@@ -55,7 +55,7 @@ def NoMissingAtoms(atom_list, residue_list, res_Start, pdbID, ch_name, pdbFile):
 
 		                is_regular_res = res.has_id('N') and res.has_id('CA') and res.has_id('C')
 				res_id = res.get_id()[0]
-		                if not (res_id ==' ' or res_id =='H_MSE' or res_id =='H_M3L' or res_id=='H_CAS') and is_regular_res :
+		                if not (res_id ==' ' or res_id =='H_MSE' or res_id =='H_M3L' or res_id=='H_CAS') or not is_regular_res :
 					print 'Discard Fragment: Non-regular residue:', res.get_id()[0], 'at position', res_index,  'in pdb:', pdbID
 					return False
 				res_name = res.get_resname()
@@ -322,10 +322,11 @@ for line in matchlines:
 	else:
 		Missing_pdb[pdbID] = 1
 		Missing_count += 1
-for line in homoOut:
-  entries=line.split()
-  print "HOMOLOGS:::"
-  print entries
+if brain_damage == 1:
+  for line in homoOut:
+    entries=line.split()
+    print "HOMOLOGS:::"
+    print entries
 print "memories per position that is fewer than expected:"  
 for i in count:
   if count[i] < N_mem:
