@@ -227,43 +227,64 @@ def buildAllAtoms(build_terminal_atoms=True, build_bonds=False):
             ia.res_no = res_no
             Cb_atom_map[res_no] = ia
 
-    # Recovering N and Cp atoms except for termianl residues
+    # Recovering N and Cp atoms except for terminal residues
     for i in range(1, nres_tot):
         if not i in Ca_atom_map:
-            print ("Error! missing Ca atom in residue %d!\n" % i)
+            print("Error! missing Ca atom in residue %d!\n" % i)
             sys.exit()
         if not (i+1) in Ca_atom_map:
-            print ("Error! missing Ca atom in residue %d!\n" % (i+1))
+            print("Error! missing Ca atom in residue %d!\n" % (i+1))
             sys.exit()
         if not i in O_atom_map:
-            print ("Error! missing O atom in residue %d!\n" % i)
+            print("Error! missing O atom in residue %d!\n" % i)
             sys.exit()
 
-        if ch_map[i]==ch_map[i+1]:
+        if ch_map[i] == ch_map[i+1]:
             Cai = Ca_atom_map[i]
             Cai1 = Ca_atom_map[i+1]
             Oi = O_atom_map[i]
 
-            nx = an*Cai.x + bn*Cai1.x + cn*Oi.x
-            ny = an*Cai.y + bn*Cai1.y + cn*Oi.y
-            nz = an*Cai.z + bn*Cai1.z + cn*Oi.z
-                
-            px = ap*Cai.x + bp*Cai1.x + cp*Oi.x
-            py = ap*Cai.y + bp*Cai1.y + cp*Oi.y
-            pz = ap*Cai.z + bp*Cai1.z + cp*Oi.z
+            resname_next = one2three(seqs_all[i])
 
-            w1, w2, w3 = 0.84100, 0.89296, -0.73389
-            h_virtual_x = w1 * Cai.x + w2 * Cai1.x + w3 * Oi.x
-            h_virtual_y = w1 * Cai.y + w2 * Cai1.y + w3 * Oi.y
-            h_virtual_z = w1 * Cai.z + w2 * Cai1.z + w3 * Oi.z
+            # Compute virtual site coordinates
+            if resname_next == 'PRO':
 
-            N = Atom(0, 'N', '2', i+1, nx, ny, nz, 'N')
-            Cp = Atom(0, 'C', '6', i, px, py, pz, 'C-Prime')
-            H = Atom(0, 'H', '7', i, h_virtual_x, h_virtual_y, h_virtual_z, 'H-Nitrogen')
+                n_coeff = (-0.2094, 0.6908, 0.5190)
+                c_coeff = (0.2193, 0.2300, 0.5507)
+                c_coeff = (ap, bp, cp)
+                nx = n_coeff[0] * Cai.x + n_coeff[1] * Cai1.x + n_coeff[2] * Oi.x
+                ny = n_coeff[0] * Cai.y + n_coeff[1] * Cai1.y + n_coeff[2] * Oi.y
+                nz = n_coeff[0] * Cai.z + n_coeff[1] * Cai1.z + n_coeff[2] * Oi.z
 
-            N_atom_map[i+1] = N
-            Cp_atom_map[i] = Cp
-            H_atom_map[i+1] = H
+                px = c_coeff[0] * Cai.x + c_coeff[1] * Cai1.x + c_coeff[2] * Oi.x
+                py = c_coeff[0] * Cai.y + c_coeff[1] * Cai1.y + c_coeff[2] * Oi.y
+                pz = c_coeff[0] * Cai.z + c_coeff[1] * Cai1.z + c_coeff[2] * Oi.z
+                N = Atom(0, 'N', '2', i+1, nx, ny, nz, 'N')
+                Cp = Atom(0, 'C', '6', i, px, py, pz, 'C-Prime')
+
+                N_atom_map[i+1] = N
+                Cp_atom_map[i] = Cp
+            else:
+
+                nx = an * Cai.x + bn * Cai1.x + cn * Oi.x
+                ny = an * Cai.y + bn * Cai1.y + cn * Oi.y
+                nz = an * Cai.z + bn * Cai1.z + cn * Oi.z
+                px = ap * Cai.x + bp * Cai1.x + cp * Oi.x
+                py = ap * Cai.y + bp * Cai1.y + cp * Oi.y
+                pz = ap * Cai.z + bp * Cai1.z + cp * Oi.z
+
+                w1, w2, w3 = 0.84100, 0.89296, -0.73389
+                hx = w1 * Cai.x + w2 * Cai1.x + w3 * Oi.x
+                hy = w1 * Cai.y + w2 * Cai1.y + w3 * Oi.y
+                hz = w1 * Cai.z + w2 * Cai1.z + w3 * Oi.z
+
+                N = Atom(0, 'N', '2', i+1, nx, ny, nz, 'N')
+                Cp = Atom(0, 'C', '6', i, px, py, pz, 'C-Prime')
+                H = Atom(0, 'H', '7', i+1, hx, hy, hz, 'H-Nitrogen')
+                N_atom_map[i+1] = N
+                Cp_atom_map[i] = Cp
+                H_atom_map[i+1] = H
+
 
     # Recovering N and Cp atoms for terminal residues
     if build_terminal_atoms:
