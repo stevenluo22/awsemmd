@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # ----------------------------------------------------------------------
 # Copyright (2010) Aram Davtyan and Garegin Papoian
@@ -193,7 +193,7 @@ def convertToPDB():
     ires = ia.res_no
     resname = one2three(seqs_all[ires-1])
     if not ires in ch_map:
-      print ("Error! atom list and sequance file size mismatch!\n")
+      print ("Error! atom list and sequence file size mismatch!\n")
       sys.exit()
     ch = ch_map[ires]
     atom = PDB_Atom(ia.No, PDB_type[ia.No_m], resname, ch, ires, ia.x, ia.y, ia.z, ia.ty)
