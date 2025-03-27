@@ -42,14 +42,14 @@ class Atom:
         print (self.atom_no, self.atom_name, self.res_no, self.res_name, self.x, self.y, self.z, self.desc)
 
     def write_(self, f):
-    	f.write( ("     "+str(self.res_no))[-5:] )
-    	f.write( ("     "+self.res_name)[-5:] )
-    	f.write( " " + (self.atom_name+"    ")[:4] )
-    	f.write( ("     "+str(self.atom_no))[-5:] )
-    	f.write( ("        "+str(round(self.x/10,3)))[-8:] )
-    	f.write( ("        "+str(round(self.y/10,3)))[-8:] )
-    	f.write( ("        "+str(round(self.z/10,3)))[-8:] )  
-    	f.write("\n")
+        f.write( ("     "+str(self.res_no))[-5:] )
+        f.write( ("     "+self.res_name)[-5:] )
+        f.write( " " + (self.atom_name+"    ")[:4] )
+        f.write( ("     "+str(self.atom_no))[-5:] )
+        f.write( ("        "+str(round(self.x/10,3)))[-8:] )
+        f.write( ("        "+str(round(self.y/10,3)))[-8:] )
+        f.write( ("        "+str(round(self.z/10,3)))[-8:] )  
+        f.write("\n")
 
 if len(sys.argv)!=4 and len(sys.argv)!=3:
     print ("\n> Pdb2Gro.py PDB_Id Output_file [Chain]\n")
