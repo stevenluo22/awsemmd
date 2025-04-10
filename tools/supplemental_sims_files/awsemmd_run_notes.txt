@@ -1,0 +1,24 @@
+getpdb pdb
+	Retrieve pdb file
+lmpsawsem_create pdb name
+	Generate project files
+lmpsawsem_param
+	Copy parameters files into folder
+lmp_serial 
+	copy run script
+GenSSweight pdb ssweight
+	Generate ssweight file
+GetSupp
+	retrieve necessary seq.gamma file
+Pdb2Gro pdb .gro
+	Generate single memory structure
+Then you have to write the single memory file (coefficients)
+GenSeq pdb name
+	Generate sequence file
+AddCharges .data .seq (optional)
+	Generate charges file, not in the format that is readable by simulation
+	Output is data.charged
+GenCharges .data .seq
+	Generate charges file that is readable by simulation
+	Output is charges_on_residues.dat (read by simulation)
+

@@ -1,0 +1,26 @@
+Hard-codes I'm sorry...
+
+alias lmpsawsem_create="/home/sl206/opt/script/./PdbCoords2Lammps.sh"
+alias lmpsawsem_param="cp ~/Programs/awsemmd/parameters/* ."
+alias lmp_serial="cp /home/sl206/opt/script/lmp_serial ."
+
+alias GenSSweight="python ~/opt/script/GenSswight.py"
+alias GetSupp="cp ~/Programs/awsemmd/tools/supplemental_sims_files/seq.gamma ."
+alias Pdb2Gro="python ~/Programs/awsemmd/tools/frag_mem_tools/Pdb2Gro.py"
+alias GenSeq="python ~/Programs/awsemmd/tools/create_project_tools/PDBToSequanceFile.py"
+alias AddCharges="python ~/opt/script/add_charges.py"
+alias GenCharges="python ~/Programs/awsemmd/tools/supplemental_sims_files/gen_charges.py"
+
+Softer codes
+where $HOME is home directory and $AWSEMMD is awsemmd base directory
+
+alias lmpsawsem_create="$HOME/opt/script/./PdbCoords2Lammps.sh"
+alias lmpsawsem_param="cp $AWSEMMD/parameters/* ."
+alias lmp_serial="cp $HOME/opt/script/lmp_serial ."
+
+alias GenSSweight="python $HOME/opt/script/GenSswight.py"
+alias GetSupp="cp $AWSEMMD/tools/supplemental_sims_files/seq.gamma ."
+alias Pdb2Gro="python $AWSEMMD/tools/frag_mem_tools/Pdb2Gro.py"
+alias GenSeq="python $AWSEMMD/tools/create_project_tools/PDBToSequanceFile.py"
+alias AddCharges="python $HOME/opt/script/add_charges.py"
+alias GenCharges="python $AWSEMMD/tools/supplemental_sims_files/gen_charges.py"
